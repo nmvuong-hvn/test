@@ -2,6 +2,7 @@ package com.example.appdrivinglience.feature.study_theory_screen
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
@@ -35,7 +36,8 @@ import com.example.appdrivinglience.feature.model.StudyTheoryModel
 @Composable
 fun StudyTheoryScreen(
     modifier: Modifier = Modifier,
-    listStudyTheoryModel: List<StudyTheoryModel>
+    listStudyTheoryModel: List<StudyTheoryModel>,
+    onItemSelected : (StudyTheoryModel) -> Unit
 ) {
 
     LazyColumn(modifier =
@@ -44,13 +46,13 @@ fun StudyTheoryScreen(
              .padding(top = 95.dp, bottom = 100.dp)
     ) {
         items(listStudyTheoryModel){
-            ItemTheory(modifier = Modifier.fillMaxWidth(), studyTheoryModel = it)
+            ItemTheory(modifier = Modifier.fillMaxWidth(), studyTheoryModel = it , onItemSelected)
         }
     }
 }
 
 @Composable
-fun ItemTheory(modifier: Modifier, studyTheoryModel: StudyTheoryModel) {
+fun ItemTheory(modifier: Modifier, studyTheoryModel: StudyTheoryModel, onItemSelected: (StudyTheoryModel) -> Unit) {
     Card(
         elevation = CardDefaults.cardElevation(
             defaultElevation = 2.dp
@@ -62,9 +64,14 @@ fun ItemTheory(modifier: Modifier, studyTheoryModel: StudyTheoryModel) {
         modifier = modifier
             .fillMaxWidth()
             .padding(top = 16.dp)
+            .clickable {
+                onItemSelected(studyTheoryModel)
+            }
     ) {
         Row(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier.fillMaxWidth().clickable {
+                onItemSelected(studyTheoryModel)
+            },
             horizontalArrangement = Arrangement.Start,
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -107,5 +114,5 @@ fun PreviewStudyTheoryScreen(){
         StudyTheoryModel(nameTheory = "Biển báo đường bộ", iconRes = R.drawable.traffic, colorTheory =  R.color.second_3),
         StudyTheoryModel(nameTheory = "Sa hình", iconRes = R.drawable.picture_frame, colorTheory =  R.color.second_4),)
     
-    StudyTheoryScreen(listStudyTheoryModel = listTheory)
+//    StudyTheoryScreen(listStudyTheoryModel = listTheory)
 }

@@ -7,5 +7,6 @@ data class StudyTheoryModel(
     val id : String = System.currentTimeMillis().toString(),
     val nameTheory : String = "",
     @DrawableRes val iconRes: Int ,
-    @ColorRes val colorTheory : Int
+    @ColorRes val colorTheory : Int ,
+    val idCategory: Int = 0,
 )

@@ -3,11 +3,13 @@ package com.example.appdrivinglience.di
 import android.content.Context
 import android.content.SharedPreferences
 import androidx.room.Room
+import com.example.appdrivinglience.core.ReadDataManager
 import com.example.appdrivinglience.database.AppDatabase
 import com.example.appdrivinglience.database.dao.CategoryLicenseDao
 import com.example.appdrivinglience.database.dao.CategoryQuestionDao
 import com.example.appdrivinglience.database.dao.NotificationDao
 import com.example.appdrivinglience.database.dao.QuestionDao
+import com.example.appdrivinglience.database.dao.QuestionWrongDao
 import com.example.appdrivinglience.database.dao.TrickDao
 import com.example.appdrivinglience.repository.AlarmRepository
 import com.example.appdrivinglience.repository.AlarmRepositoryImpl
@@ -41,6 +43,17 @@ object DataModule {
     @Singleton
     fun provideQuestionDao(appDatabase: AppDatabase): QuestionDao {
         return appDatabase.questionDao()
+    }
+    @Provides
+    @Singleton
+    fun provideQuestionWrongDao(appDatabase: AppDatabase): QuestionWrongDao {
+        return appDatabase.questionWrongDao()
+    }
+
+    @Provides
+    @Singleton
+    fun provideReaderDataManager(@ApplicationContext context: Context) : ReadDataManager {
+        return ReadDataManager(context);
     }
 
     @Provides

@@ -23,7 +23,6 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -37,9 +36,11 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import androidx.navigation.navigation
 import com.example.appdrivinglience.R
 import com.example.appdrivinglience.feature.type_driving_lience.TypeDrivingLicenseScreen
@@ -53,6 +54,7 @@ import com.example.appdrivinglience.feature.notification_screen.NotificationScre
 import com.example.appdrivinglience.feature.setting.SettingScreen
 import com.example.appdrivinglience.feature.study_theory_screen.ExaminationScreen
 import com.example.appdrivinglience.feature.study_theory_screen.StudyTheoryScreen
+import com.example.appdrivinglience.feature.study_theory_screen.StudyTheoryScreenViewModel
 import com.example.appdrivinglience.feature.trick_screen.TrickViewScreen
 import com.example.appdrivinglience.navigaion.BottomBarScreen
 import com.example.appdrivinglience.navigaion.Graph
@@ -133,7 +135,8 @@ fun MainScreen(
                             screenCurrentState == BottomBarScreen.Theory.title ||
                             screenCurrentState == LearnTrickScreen.LearnTrick.title ||
                             screenCurrentState == NotificationScreen.CreateNotification.title ||
-                            screenCurrentState == NotificationScreen.ListNotification.title
+                            screenCurrentState == NotificationScreen.ListNotification.title ||
+                            screenCurrentState == LearnWrongScreen.LearnWrong.title
                         ) {
 
                             IconButton(onClick = {
@@ -198,7 +201,8 @@ fun MainScreen(
 
                         LEARN.WRONG -> {
                             screenCurrentState = LearnWrongScreen.LearnWrong.title
-                            navController.navigate(LearnWrongScreen.LearnWrong.route)
+                            val data = 99
+                            navController.navigate("${LearnWrongScreen.LearnWrong.route}?idCategory=${data}")
                         }
 
                         LEARN.LEARN_SIGN -> {
@@ -231,17 +235,20 @@ fun MainScreen(
                     StudyTheoryModel(
                         nameTheory = "Văn hóa và đạo đức lái xe",
                         iconRes = R.drawable.car,
-                        colorTheory = R.color.second_4
+                        colorTheory = R.color.second_4,
+                        idCategory = 3
                     ),
                     StudyTheoryModel(
                         nameTheory = "Kỹ thuật lái xe",
                         iconRes = R.drawable.group,
-                        colorTheory = R.color.second_1
+                        colorTheory = R.color.second_1,
+                        idCategory = 4
                     ),
                     StudyTheoryModel(
                         nameTheory = "Cấu tạo và sửa chữa",
                         iconRes = R.drawable.edit,
-                        colorTheory = R.color.second_2
+                        colorTheory = R.color.second_2,
+                        idCategory = 5
                     ),
                     StudyTheoryModel(
                         nameTheory = "Biển báo đường bộ",
@@ -260,7 +267,9 @@ fun MainScreen(
                         .fillMaxSize()
                         .background(color = MaterialTheme.colorScheme.background),
                     listStudyTheoryModel = listTheory
-                )
+                ){
+                    navController.navigate("${LearnWrongScreen.LearnWrong.route}?idCategory=${it.idCategory}")
+                }
             }
             composable(MainScreen.TestMockScreen.route) {
 
@@ -284,13 +293,40 @@ fun MainScreen(
             composable(LearnTrickScreen.LearnTrick.route) {
                 TrickViewScreen(modifier = Modifier.fillMaxSize())
             }
-            composable(LearnWrongScreen.LearnWrong.route) {
-                val learnWrongViewModel = hiltViewModel<LearnWrongViewModel>()
-                ExaminationScreen(
-                    listQuestionModel = listOf(),
-                    modifier = Modifier.fillMaxSize(),
-                    viewModel = learnWrongViewModel
+            composable("${LearnWrongScreen.LearnWrong.route}?idCategory={idCategory}",
+                arguments = listOf(
+                    navArgument("idCategory") {
+                        type = NavType.LongType
+                    }
                 )
+            ) {
+                val idCategory = it.arguments?.getLong("idCategory")
+                idCategory?.let {
+                    if (it != 99L) {
+                        val learnViewModel = hiltViewModel<StudyTheoryScreenViewModel>()
+                        ExaminationScreen(
+                            listQuestionModel = listOf(),
+                            modifier = Modifier.fillMaxSize(),
+                            idCategory = it,
+                            viewModel = learnViewModel
+                        )
+                    }else {
+                        val learnWrongViewModel = hiltViewModel<LearnWrongViewModel>()
+                        ExaminationScreen(
+                            listQuestionModel = listOf(),
+                            modifier = Modifier.fillMaxSize(),
+                            viewModel = learnWrongViewModel
+                        )
+                    }
+                }?: run {
+                    val learnWrongViewModel = hiltViewModel<LearnWrongViewModel>()
+                    ExaminationScreen(
+                        listQuestionModel = listOf(),
+                        modifier = Modifier.fillMaxSize(),
+                        viewModel = learnWrongViewModel
+                    )
+                }
+
             }
             composable(NotificationScreen.CreateNotification.route) {
                 CreateNotificationScreen(

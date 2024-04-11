@@ -19,6 +19,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import com.example.appdrivinglience.core.ReadDataManager
 import com.example.appdrivinglience.core.ReadFileUtils
 import com.example.appdrivinglience.core.SettingSharePreference
 import com.example.appdrivinglience.ui.theme.AppDrivingLienceTheme
@@ -34,9 +35,20 @@ class MainActivity : ComponentActivity() {
     lateinit var  readFileUtils: ReadFileUtils
     @Inject
     lateinit var sharePreference: SettingSharePreference
+    @Inject
+    lateinit var readDataManager: ReadDataManager
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-//        readFileUtils.readTrickFile(this)
+
+        if (!readDataManager.getInstalledApps()){
+            readDataManager.setInstalledApps(true)
+            readFileUtils.readTrickFile(this)
+            readFileUtils.readNVVTTheoryFile(this)
+            readFileUtils.readCTSCTheoryFile(this)
+            readFileUtils.readVHTheoryFile(this)
+        }
+
         val mainViewModel by viewModels<MainViewModel>()
         val systemTheme = when (resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK) {
             Configuration.UI_MODE_NIGHT_YES -> { true }

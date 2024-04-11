@@ -21,6 +21,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Divider
+import androidx.compose.material3.ScrollableTabRow
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -39,16 +40,7 @@ import com.example.appdrivinglience.R
 
 @Composable
 fun StudySignScreen(modifier: Modifier = Modifier) {
-    LazyColumn(
-        modifier = modifier.fillMaxSize()
-    ) {
 
-        item {
-            LazyRow(modifier = Modifier.fillMaxWidth()) {
-
-            }
-        }
-        item {
             LazyVerticalGrid(
                 columns = GridCells.Fixed(3),
                 contentPadding = PaddingValues(
@@ -60,32 +52,14 @@ fun StudySignScreen(modifier: Modifier = Modifier) {
             ) {
 
             }
-        }
-    }
+
+
 }
 
 @Composable
-fun ItemSectionSign(modifier: Modifier = Modifier) {
-    Column(
-        modifier = modifier.fillMaxWidth()
-    ) {
-        Text(
-            text = "Biển Báo Cấm",
-            style = TextStyle(
-                fontSize = 16.sp,
-                fontFamily = FontFamily(Font(R.font.bevietnam_thin)),
-                fontWeight = FontWeight(500),
-                color = colorResource(id = R.color.green_primary),
-
-                textAlign = TextAlign.Center,
-            )
-        )
-        Spacer(modifier = Modifier.height(5.dp))
-        Divider(
-            color = colorResource(id = R.color.green_primary), modifier = Modifier
-                .height(3.dp)
-                .width(100.dp)
-        )
+fun SectionSign(modifier: Modifier = Modifier) {
+    ScrollableTabRow(selectedTabIndex = 0) {
+        
     }
 }
 
@@ -135,15 +109,12 @@ fun ItemSign(modifier: Modifier = Modifier) {
 @Preview
 @Composable
 fun PreviewItemSign() {
-    val horizontalScrollState = rememberScrollState()
     Column(
         modifier = Modifier.fillMaxSize()
     ) {
         LazyRow(
             modifier = Modifier
                 .wrapContentSize()
-                .horizontalScroll(horizontalScrollState),
-
             ) {
             items(6) {
                 ItemSectionSign()

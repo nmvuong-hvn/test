@@ -1,5 +1,3 @@
-//package com.example.appdrivinglience.navigaion.graphs
-
 import android.annotation.SuppressLint
 import androidx.compose.runtime.Composable
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -20,7 +18,6 @@ fun RootNavGraph(homeViewModel: HomeViewModel = hiltViewModel(), onChangeTheme :
 
            onBoardingNavGraph(onBoardingController)
            composable(route= Graph.MainScreenGraph){
-//           onMainNavGraph(onBoardingController)
                MainScreen(homeViewModel){
                    onChangeTheme(it)
                }
