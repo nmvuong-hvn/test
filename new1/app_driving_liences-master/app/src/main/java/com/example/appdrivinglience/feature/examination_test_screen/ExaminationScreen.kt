@@ -62,7 +62,6 @@ fun ExaminationMockScreen(
     modifier: Modifier = Modifier, onBack : ()-> Unit, onSubmit : ()-> Unit) {
 
     LaunchedEffect(key1 = Unit) {
-        examinationViewModel.getDataExamination("A1","de1.txt")
         examinationViewModel.startExamination(TimeUnit.MINUTES.toMillis(26))
     }
     ;

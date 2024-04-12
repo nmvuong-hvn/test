@@ -1,6 +1,7 @@
 package com.example.appdrivinglience.feature.examination_test_screen
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -32,43 +33,60 @@ import com.example.appdrivinglience.R
 @Composable
 fun TestScreen(
     testExaminationViewModel: TestExaminationViewModel = hiltViewModel(),
-    modifier: Modifier = Modifier) {
+    modifier: Modifier = Modifier, onClick: (String) -> Unit) {
     println("Size = ${testExaminationViewModel.getNumberExamination()}")
     LazyColumn(
-        modifier = modifier.fillMaxSize().padding(top = 90.dp, bottom = 100.dp),
+        modifier = modifier
+            .fillMaxSize()
+            .padding(top = 90.dp, bottom = 120.dp),
         horizontalAlignment = Alignment.Start,
         verticalArrangement = Arrangement.Top
     ) {
         items(testExaminationViewModel.getNumberExamination()){
-            ItemTest(index = it, testExaminationViewModel = testExaminationViewModel)
+            ItemTest(index = it, testExaminationViewModel = testExaminationViewModel){
+                onClick(it)
+            }
         }
     }
 }
 
 @Composable
-fun ItemTest(index: Int ,modifier: Modifier = Modifier, testExaminationViewModel: TestExaminationViewModel) {
+fun ItemTest(index: Int ,modifier: Modifier = Modifier,
+             testExaminationViewModel: TestExaminationViewModel,
+             onClick: (String) -> Unit) {
     Card(
         elevation = CardDefaults.cardElevation(
             defaultElevation = 2.dp
         ),
         shape = RoundedCornerShape(10.dp),
         colors = CardDefaults.cardColors(
-            containerColor = colorResource(id = R.color.red),
+            containerColor = if (testExaminationViewModel.getExaminationLicense("$index") == -1){
+                colorResource(id = R.color.white)
+            }else {
+                colorResource(id = R.color.red)
+            }
         ),
         modifier = modifier
             .fillMaxWidth()
+            .clickable {
+                onClick("${index + 1}")
+            }
             .padding(horizontal = 16.dp, vertical = 8.dp)
     ) {
         Row(
             modifier = modifier
                 .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 16.dp),
+                .padding(horizontal = 16.dp, vertical = 16.dp).clickable {
+                    onClick("${index + 1}")
+                },
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
             Column(
                 modifier = modifier
-                    .wrapContentSize(),
+                    .wrapContentSize().clickable {
+                        onClick("${index + 1}")
+                    },
                 horizontalAlignment = Alignment.Start,
                 verticalArrangement = Arrangement.Top
 

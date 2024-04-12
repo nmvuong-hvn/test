@@ -68,6 +68,14 @@ class TestExaminationViewModel @Inject constructor(
         timerCounter?.start()
     }
 
+    fun saveExaminationLicense(key: String, score: Int){
+        fileSharePreference.saveScoreForCategoryLicense(key,score)
+    }
+
+    fun getExaminationLicense(key: String): Int{
+        return fileSharePreference.getScoreForCategoryLicense(fileSharePreference.getCategoryLicense()+"_"+key)
+    }
+
     fun setAnswerByIdQuestion(id: Long, index : Int) {
         checkExaminationManager.setAnswerByIdQuestion(id,index)
     }

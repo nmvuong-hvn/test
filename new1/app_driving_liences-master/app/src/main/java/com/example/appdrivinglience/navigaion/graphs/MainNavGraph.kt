@@ -72,6 +72,7 @@ import com.example.appdrivinglience.navigaion.LearnWrongScreen
 import com.example.appdrivinglience.navigaion.MainScreen
 import com.example.appdrivinglience.navigaion.NotificationScreen
 import com.example.appdrivinglience.navigaion.ResultScreen
+import com.example.appdrivinglience.navigaion.TestExaminationScreen
 import com.example.appdrivinglience.navigaion.TypeLicenseScreen
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
@@ -130,7 +131,7 @@ fun MainScreen(
         modifier = Modifier.fillMaxSize(),
         topBar = {
 
-            if (screenCurrentState != BottomBarScreen.Home.title ) {
+            if (screenCurrentState != BottomBarScreen.Home.title && screenCurrentState != TestExaminationScreen.TestExamination.route ) {
                 CenterAlignedTopAppBar(
                     colors = TopAppBarDefaults.topAppBarColors(
                         containerColor = colorResource(id = R.color.green_primary),
@@ -306,18 +307,25 @@ fun MainScreen(
                     }
                 })
             }
+            composable(TestExaminationScreen.TestExamination.route){
+                ExaminationMockScreen(
+                    examinationViewModel = examinationViewModel,
+                    onBack = {
+                    screenCurrentState = BottomBarScreen.Home.title
+                    navController.navigate(BottomBarScreen.Home.route) },
+                    onSubmit = {
+                        screenCurrentState = ResultScreen.ResultExamination.title
+                        navController.navigate(ResultScreen.ResultExamination.route)
+                })
+            }
             composable(MainScreen.TestMockScreen.route) {
-                TestScreen()
-//                ExaminationMockScreen(
-//                    examinationViewModel = examinationViewModel,
-//                    onBack = {
-//                    screenCurrentState = BottomBarScreen.Home.title
-//                    navController.navigate(BottomBarScreen.Home.route) },
-//                    onSubmit = {
-//                        screenCurrentState = ResultScreen.ResultExamination.title
-//                        navController.navigate(ResultScreen.ResultExamination.route)
-//                })
-
+                TestScreen {
+                    val folder = homeViewModel.getCategoryLicense()
+                    val file   = "$it.txt"
+                    examinationViewModel.getDataExamination(folder,file)
+                    screenCurrentState = TestExaminationScreen.TestExamination.route
+                    navController.navigate(TestExaminationScreen.TestExamination.route)
+                }
             }
             composable(MainScreen.SignScreen.route) {
 

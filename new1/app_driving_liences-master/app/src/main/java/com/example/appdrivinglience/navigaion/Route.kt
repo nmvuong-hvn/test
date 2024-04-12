@@ -74,6 +74,10 @@ sealed class ResultScreen(val route: String, val title : String){
     data object ResultExamination : ResultScreen("ResultExamination","Kết quả bài thi")
 }
 
+sealed class TestExaminationScreen(val route: String, val title : String){
+    data object TestExamination : ResultScreen("TestExamination","Kết quả bài thi")
+}
+
 
 enum class LEARN (val data: Int) {
     THEORY(1),

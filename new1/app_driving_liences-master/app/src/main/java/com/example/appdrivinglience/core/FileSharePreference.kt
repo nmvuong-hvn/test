@@ -30,6 +30,6 @@ class FileSharePreference @Inject constructor(@ApplicationContext context: Conte
     }
 
     fun getScoreForCategoryLicense(key: String): Int {
-        return  sharedPreferences.getInt(key,0)
+        return  sharedPreferences.getInt(key,-1)
     }
 }
