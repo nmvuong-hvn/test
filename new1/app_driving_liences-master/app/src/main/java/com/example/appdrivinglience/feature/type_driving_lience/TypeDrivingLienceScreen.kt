@@ -27,19 +27,23 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.appdrivinglience.R
+import com.example.appdrivinglience.database.model.CategoryLicense
+import com.example.appdrivinglience.feature.home_screen.HomeViewModel
 import com.example.appdrivinglience.feature.model.TypeDriving
 
 
 @Composable
 fun TypeDrivingLicenseScreen(
+    homeViewModel: HomeViewModel = hiltViewModel(),
     modifier: Modifier = Modifier,
-    listTypeDrivingLicense: List<TypeDriving>,
-    onSelectedItem: (TypeDriving) -> Unit
+    listTypeDrivingLicense: List<CategoryLicense>,
+    onSelectedItem: (CategoryLicense) -> Unit
 ) {
     
     var selectedCategory by remember {
-        mutableStateOf(listTypeDrivingLicense[0])
+        mutableStateOf(homeViewModel.getCategoryLicense())
     }
 
     LazyColumn(modifier = modifier
@@ -51,10 +55,10 @@ fun TypeDrivingLicenseScreen(
         items(listTypeDrivingLicense){
             ItemLicense(typeDriving = it, 
                 onSelectedItem = {
-                    selectedCategory = it
+                    selectedCategory = it.nameLicense
                     onSelectedItem(it)
                 },
-                isSelected = selectedCategory == it
+                isSelected = selectedCategory == it.nameLicense
             )
         }
     }
@@ -64,8 +68,8 @@ fun TypeDrivingLicenseScreen(
 @Composable
 fun ItemLicense(
     modifier: Modifier = Modifier,
-    typeDriving: TypeDriving,
-    onSelectedItem : (TypeDriving)-> Unit,
+    typeDriving: CategoryLicense,
+    onSelectedItem : (CategoryLicense)-> Unit,
     isSelected : Boolean
 ) {
     Row(
@@ -87,7 +91,7 @@ fun ItemLicense(
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
-            text = typeDriving.nameType,
+            text = typeDriving.nameLicense,
             style = TextStyle(
                 fontSize = 14.sp,
                 fontFamily = FontFamily(Font(R.font.vietnampro_black)),
@@ -97,7 +101,7 @@ fun ItemLicense(
         )
         Spacer(modifier = Modifier.width(32.dp))
         Text(
-            text = typeDriving.contentType,
+            text = typeDriving.description,
             style = TextStyle(
                 fontSize = 14.sp,
                 fontFamily = FontFamily(Font(R.font.vietnampro_black)),

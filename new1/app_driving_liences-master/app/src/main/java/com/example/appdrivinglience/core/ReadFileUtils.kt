@@ -1,8 +1,6 @@
 package com.example.appdrivinglience.core
 
 import android.content.Context
-import android.content.res.AssetManager
-import com.example.appdrivinglience.database.AppDatabase
 import com.example.appdrivinglience.database.dao.QuestionDao
 import com.example.appdrivinglience.database.dao.TrickDao
 import com.example.appdrivinglience.database.model.Question
@@ -11,12 +9,11 @@ import java.io.BufferedReader
 import java.io.InputStreamReader
 import javax.inject.Inject
 
-class ReadFileUtils @Inject constructor() {
-    @Inject
-    lateinit var trickDao: TrickDao
-    @Inject
-    lateinit var questionDao: QuestionDao
-
+class ReadFileUtils @Inject constructor(
+    private val context: Context,
+    private val trickDao: TrickDao,
+    private val questionDao: QuestionDao
+    ) {
     fun readTrickFile(context: Context){
         val bufferReader = BufferedReader(InputStreamReader(context.assets.open("TRICK/meothi.txt")));
         var data : String = bufferReader.readLine()
@@ -93,7 +90,6 @@ class ReadFileUtils @Inject constructor() {
             }
         }
     }
-
     fun readNVVTTheoryFile(context: Context){
         val bufferReader = BufferedReader(InputStreamReader(context.assets.open("NGHIEPVU_VANTAI/nghiepvu_vantai.txt")));
         var data : String? = bufferReader.readLine()
@@ -120,7 +116,6 @@ class ReadFileUtils @Inject constructor() {
             }
         }
     }
-
     fun readKNQTFile(context: Context){
         val bufferReader = BufferedReader(InputStreamReader(context.assets.open("KHAI_NIEM_QUY_TAC/khainiemquytac.txt")));
         var data : String? = bufferReader.readLine()
@@ -147,7 +142,6 @@ class ReadFileUtils @Inject constructor() {
             }
         }
     }
-
     fun readDLFile(context: Context){
         val bufferReader = BufferedReader(InputStreamReader(context.assets.open("DIEM_LIET/diemliet.txt")));
         var data : String? = bufferReader.readLine()
@@ -200,7 +194,6 @@ class ReadFileUtils @Inject constructor() {
             }
         }
     }
-
     fun readBBFile(context: Context){
         val bufferReader = BufferedReader(InputStreamReader(context.assets.open("BIEN_BAO/bienbao.txt")));
         var data : String? = bufferReader.readLine()
@@ -227,10 +220,42 @@ class ReadFileUtils @Inject constructor() {
             }
         }
     }
+    fun getNumberTest(folder: String) : Int {
+        return context.assets.list(folder)?.size ?: 0
+    }
+    fun getInformationTest(folder: String ,file: String):List<Question>{
+        val bufferReader = BufferedReader(InputStreamReader(context.assets.open("$folder/$file")));
+        var data : String? = bufferReader.readLine()
+        val questionList = mutableListOf<Question>()
+        val dataList = data?.split("@@")?.toList() ?: mutableListOf();
+        val questionData = getQuestion(dataList,6)
+        questionData?.let {
+            questionList.add(it)
+        }
+        while (data?.isNotEmpty() == true) {
+            runCatching {
+                data = bufferReader.readLine()
+                if (data == null) return questionList;
+                val dataTmpList = data?.split("@@")?.toList() ?: mutableListOf()
+                getQuestion(dataTmpList, 6)?.let {
+                    questionList.add(it)
+                }
+
+            }.onFailure {
+                println("error = ${it.message}")
+                return questionList
+            }
+        }
+        return  questionList
+    }
     private fun getQuestion(dataList: List<String>, idCategoryQuestion: Long) : Question? {
         var dataQuestion : Question?= null
-        println(dataList)
          if (dataList.size >= 7 ){
+             val isHttp = dataList[0].contains("http")
+             var imgUrl = ""
+             if (isHttp){
+                 imgUrl = dataList[0].substring(dataList[0].indexOf("http"))
+             }
             dataQuestion =  Question(
                 idCategoryQuestion = idCategoryQuestion,
                 question = dataList[0],
@@ -238,37 +263,49 @@ class ReadFileUtils @Inject constructor() {
                 ansB = dataList[2],
                 ansC = dataList[3],
                 ansD = dataList[4],
+                imageUrl = imgUrl,
                 correctAns = getAnswerQuestion(dataList[1], dataList[2], dataList[3], dataList[4], dataList[5]),
                 analysis = dataList[6],
                 isImportant = dataList[0][0] == '*'
             )
         }else if(dataList.size == 6){
+             val isHttp = dataList[0].contains("http")
+             var imgUrl = ""
+             if (isHttp){
+                 imgUrl = dataList[0].substring(dataList[0].indexOf("http"))
+             }
             dataQuestion =  Question(
                 idCategoryQuestion = idCategoryQuestion,
                 question = dataList[0],
                 ansA = dataList[1],
                 ansB = dataList[2],
                 ansC = dataList[3],
+                imageUrl = imgUrl,
                 correctAns = getAnswerQuestion(a= dataList[1], b=dataList[2], c=dataList[3],d = null, ans = dataList[4]),
                 analysis = dataList[5],
                 isImportant = dataList[0][0] == '*'
             )
         }else if(dataList.size == 5) {
+             val isHttp = dataList[0].contains("http")
+             var imgUrl = ""
+             if (isHttp){
+                 imgUrl = dataList[0].substring(dataList[0].indexOf("http"))
+             }
              dataQuestion =  Question(
                  idCategoryQuestion= idCategoryQuestion,
-                question = dataList[0],
-                ansA = dataList[1],
-                ansB = dataList[2],
-                correctAns = getAnswerQuestion(dataList[1], dataList[2], c= null, d = null, dataList[3]),
-                analysis = dataList[4],
-                isImportant = dataList[0][0] == '*'
+                 question = dataList[0],
+                 ansA = dataList[1],
+                 ansB = dataList[2],
+                 imageUrl = imgUrl,
+                 correctAns = getAnswerQuestion(dataList[1], dataList[2], c= null, d = null, dataList[3]),
+                 analysis = dataList[4],
+                 isImportant = dataList[0][0] == '*'
             )
         }else {
              print("size = ${dataList.size}")
         }
         return  dataQuestion
     }
-
     private fun getAnswerQuestion(a: String, b : String, c : String?, d: String?, ans: String): Int {
         return if (a == ans) {
             0
@@ -280,5 +317,6 @@ class ReadFileUtils @Inject constructor() {
             3
         }
     }
+
 
 }

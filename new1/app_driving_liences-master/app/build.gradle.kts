@@ -80,5 +80,6 @@ dependencies {
     implementation(libs.accompanist.systemuicontroller)
     implementation(libs.androidx.runtime.livedata)
     implementation(libs.accompanist.permissions)
+    implementation(libs.coil.compose)
 
 }

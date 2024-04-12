@@ -18,13 +18,17 @@ class StudyTheoryScreenViewModel @Inject constructor(
 ) : ViewModel() {
     private val _questionState = mutableStateOf<QuestionState>(QuestionState.Loading)
     val questionState : State<QuestionState> = _questionState
-
-
     fun getQuestionByIdCategory(idCategory: Long){
         _questionState.value = QuestionState.Loading
         viewModelScope.launch {
             runCatching {
-                _questionState.value = QuestionState.Success(questionDao.getListQuestionByIdCategory(idCategory))
+                if (idCategory == 0L){
+                    _questionState.value =
+                        QuestionState.Success(questionDao.getAllQuestion())
+                }else {
+                    _questionState.value =
+                        QuestionState.Success(questionDao.getListQuestionByIdCategory(idCategory))
+                }
             }.onFailure {
                 _questionState.value = QuestionState.Error(it.message)
             }

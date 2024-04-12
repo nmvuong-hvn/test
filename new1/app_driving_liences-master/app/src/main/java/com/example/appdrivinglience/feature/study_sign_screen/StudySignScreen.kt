@@ -93,7 +93,6 @@ fun ItemSign(modifier: Modifier = Modifier) {
             Spacer(modifier = Modifier.height(4.dp))
             Text(
                 text = "P.101",
-
                 style = TextStyle(
                     fontSize = 16.sp,
                     fontFamily = FontFamily(Font(R.font.vietnampro_black)),
@@ -117,7 +116,7 @@ fun PreviewItemSign() {
                 .wrapContentSize()
             ) {
             items(6) {
-                ItemSectionSign()
+//                ItemSectionSign()
             }
         }
         Spacer(modifier = Modifier.height(100.dp))

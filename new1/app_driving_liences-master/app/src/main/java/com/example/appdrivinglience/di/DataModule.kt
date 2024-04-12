@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.SharedPreferences
 import androidx.room.Room
 import com.example.appdrivinglience.core.ReadDataManager
+import com.example.appdrivinglience.core.ReadFileUtils
 import com.example.appdrivinglience.database.AppDatabase
 import com.example.appdrivinglience.database.dao.CategoryLicenseDao
 import com.example.appdrivinglience.database.dao.CategoryQuestionDao
@@ -11,6 +12,7 @@ import com.example.appdrivinglience.database.dao.NotificationDao
 import com.example.appdrivinglience.database.dao.QuestionDao
 import com.example.appdrivinglience.database.dao.QuestionWrongDao
 import com.example.appdrivinglience.database.dao.TrickDao
+import com.example.appdrivinglience.feature.examination_test_screen.CheckExaminationManager
 import com.example.appdrivinglience.repository.AlarmRepository
 import com.example.appdrivinglience.repository.AlarmRepositoryImpl
 import dagger.Module
@@ -34,6 +36,11 @@ object DataModule {
         ).allowMainThreadQueries().build()
     }
 
+    @Provides
+    @Singleton
+    fun provideCheckExamination() : CheckExaminationManager{
+        return  CheckExaminationManager()
+    }
     @Provides
     @Singleton
     fun provideSharePreferences(@ApplicationContext context: Context): SharedPreferences{
@@ -66,6 +73,12 @@ object DataModule {
     @Singleton
     fun provideAlarmRepository(@ApplicationContext context: Context): AlarmRepository {
         return AlarmRepositoryImpl(context = context)
+    }
+
+    @Provides
+    @Singleton
+    fun providerReadFileUtils(@ApplicationContext context: Context, trickDao: TrickDao, questionDao: QuestionDao): ReadFileUtils {
+        return ReadFileUtils(context = context, trickDao, questionDao)
     }
 
     @Provides

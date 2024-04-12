@@ -1,10 +1,8 @@
 package com.example.appdrivinglience
 
 import RootNavGraph
-import android.Manifest
 import android.content.res.Configuration
 import android.graphics.Color
-import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.SystemBarStyle
@@ -24,7 +22,6 @@ import com.example.appdrivinglience.core.ReadFileUtils
 import com.example.appdrivinglience.core.SettingSharePreference
 import com.example.appdrivinglience.ui.theme.AppDrivingLienceTheme
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
-import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -42,11 +39,14 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         if (!readDataManager.getInstalledApps()){
-            readDataManager.setInstalledApps(true)
             readFileUtils.readTrickFile(this)
             readFileUtils.readNVVTTheoryFile(this)
             readFileUtils.readCTSCTheoryFile(this)
             readFileUtils.readVHTheoryFile(this)
+            readFileUtils.readKNQTFile(this)
+            readFileUtils.readDLFile(this)
+            readFileUtils.readSHFile(this)
+            readFileUtils.readBBFile(this)
         }
 
         val mainViewModel by viewModels<MainViewModel>()
@@ -65,14 +65,13 @@ class MainActivity : ComponentActivity() {
                 Surface(modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background) {
 
-                    RootNavGraph{
+                    RootNavGraph(readDataManager){
                         if(mainViewModel.appThemeLiveData.value == true ) {
                             mainViewModel.setAppTheme(false)
                             sharePreference.saveAppTheme(false)
                         }else {
                             mainViewModel.setAppTheme(true)
                             sharePreference.saveAppTheme(true)
-
                         }
                     }
                 }

@@ -70,6 +70,10 @@ sealed class LearnTrickScreen(val route: String, val title : String){
 sealed class LearnWrongScreen(val route: String, val title : String){
     data object LearnWrong : LearnWrongScreen("LearnWrongScreen","Câu hỏi hay sai")
 }
+sealed class ResultScreen(val route: String, val title : String){
+    data object ResultExamination : ResultScreen("ResultExamination","Kết quả bài thi")
+}
+
 
 enum class LEARN (val data: Int) {
     THEORY(1),

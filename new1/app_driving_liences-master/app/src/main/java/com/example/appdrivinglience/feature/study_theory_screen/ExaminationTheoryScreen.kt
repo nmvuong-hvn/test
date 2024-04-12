@@ -1,20 +1,22 @@
 package com.example.appdrivinglience.feature.study_theory_screen
 
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.DragInteraction
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
@@ -36,11 +38,13 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil.compose.rememberAsyncImagePainter
 import com.example.appdrivinglience.R
 import com.example.appdrivinglience.components.CommonErrorScreen
 import com.example.appdrivinglience.components.CommonLoadingScreen
 import com.example.appdrivinglience.database.model.Question
 import com.example.appdrivinglience.database.model.QuestionWrongModel
+import com.example.appdrivinglience.feature.examination_test_screen.TestExaminationViewModel
 import com.example.appdrivinglience.feature.learn_wrong.LearnWrongState
 import com.example.appdrivinglience.feature.learn_wrong.LearnWrongViewModel
 import com.example.appdrivinglience.feature.model.QuestionModel
@@ -159,7 +163,7 @@ fun <T> ExaminationScreen(
                         verticalArrangement = Arrangement.Top,
                         horizontalAlignment = Alignment.Start
                     ) {
-                        if (state.listQuestion.isNullOrEmpty()) {
+                        if (state.listQuestion.isEmpty()) {
                             item {
                                 Column(
                                     modifier = Modifier.fillMaxSize(),
@@ -221,19 +225,20 @@ fun <T> ExaminationScreen(
 @Composable
 fun <T> ItemQuestion(questionModel: Question, modifier: Modifier = Modifier,
                  index: Int , dataMap: Map<Int, Pair<Int , String?>>,
-                 viewModel: T , onChange : ()-> Unit) {
+                 viewModel: T , a : Int = -1 , b : Int= -1 ,
+                     c : Int= -1 , d : Int = -1,onChange : (Int)-> Unit,) {
 
     var userChoiceAState by remember{
-        mutableIntStateOf(-1)
+        mutableIntStateOf(a)
     }
     var userChoiceBState by remember{
-        mutableIntStateOf(-1)
+        mutableIntStateOf(b)
     }
     var userChoiceCState by remember{
-        mutableIntStateOf(-1)
+        mutableIntStateOf(c)
     }
     var userChoiceDState by remember{
-        mutableIntStateOf(-1)
+        mutableIntStateOf(d)
     }
     var isAnswer by remember {
         mutableStateOf(false)
@@ -257,8 +262,13 @@ fun <T> ItemQuestion(questionModel: Question, modifier: Modifier = Modifier,
                 .fillMaxWidth()
                 .padding(horizontal = 16.dp, vertical = 16.dp)
         ) {
+            var question = questionModel.question
+            if (questionModel.question.contains("http")){
+                question = questionModel.question.substring(0,questionModel.question.indexOf("http"))
+            }
+
             Text(
-                text = questionModel.question,
+                text = question,
                 style = TextStyle(
                     fontSize = 16.sp,
                     lineHeight = 24.sp,
@@ -267,102 +277,144 @@ fun <T> ItemQuestion(questionModel: Question, modifier: Modifier = Modifier,
                     color = colorResource(id = R.color.dark_ne),
                 )
             )
+
+            if (questionModel.imageUrl.isNotEmpty() && questionModel.imageUrl.contains("http")){
+                Spacer(modifier = Modifier.height(10.dp))
+                Image(
+                    modifier = Modifier
+                        .height(150.dp)
+                        .fillMaxWidth(),
+                    painter = rememberAsyncImagePainter(questionModel.imageUrl),
+                    contentDescription = null
+                )
+            }
+
             if (questionModel.ansA?.isNotEmpty() == true) {
                 OneQuestion(question = questionModel.ansA , modifier.clickable {
-                    println("a")
-                    if (isAnswer) return@clickable
-                    isAnswer = true
-
-                    onChange()
+                    if(viewModel !is TestExaminationViewModel){
+                        if (isAnswer) return@clickable
+                        isAnswer = true
+                    }
+                    onChange(0)
                     userChoiceAState = 0
-                    if (userChoiceAState != answerCorrect?.first){
-                        val dataQuestionModel = QuestionWrongModel(idQuestion = questionModel.id)
-                        saveDataQuestionWrong(viewModel,dataQuestionModel)
-                        when(answerCorrect?.first) {
-                            1-> userChoiceBState = 1
-                            2-> userChoiceCState = 2
-                            else -> userChoiceDState = 3
+                    if (viewModel !is TestExaminationViewModel) {
+
+                        if (userChoiceAState != answerCorrect?.first) {
+                            val dataQuestionModel =
+                                QuestionWrongModel(idQuestion = questionModel.id)
+                            saveDataQuestionWrong(viewModel, dataQuestionModel)
+                            when (answerCorrect?.first) {
+                                1 -> userChoiceBState = 1
+                                2 -> userChoiceCState = 2
+                                else -> userChoiceDState = 3
+                            }
+                        } else {
+                            when (viewModel) {
+                                is LearnWrongViewModel -> viewModel.deleteDataQuestion(questionModel.id)
+                            }
                         }
                     }else {
-                        when(viewModel) {
-                            is LearnWrongViewModel->  viewModel.deleteDataQuestion(questionModel.id)
-                        }
+                        userChoiceBState = -1
+                        userChoiceDState = -1
+                        userChoiceCState = -1
                     }
-                }, idColor = changeBgColorQuestion(userChoiceAState, answerCorrect?.first))
+                }, idColor = if (viewModel is TestExaminationViewModel )changeBgColorQuestion(userChoiceAState) else changeBgColorQuestion(userChoiceAState, answerCorrect?.first))
             }
             if (questionModel.ansB?.isNotEmpty() == true) {
                 OneQuestion(question = questionModel.ansB , modifier.clickable {
-                    println("b")
-                    if (isAnswer) return@clickable
-                    isAnswer = true
-
-                    onChange()
+                    if(viewModel !is TestExaminationViewModel){
+                        if (isAnswer) return@clickable
+                        isAnswer = true
+                    }
+                    onChange(1)
 
                     userChoiceBState = 1
-                    if (userChoiceBState != answerCorrect?.first){
-                        val dataQuestionModel = QuestionWrongModel(idQuestion = questionModel.id)
-                        saveDataQuestionWrong(viewModel,dataQuestionModel)
-                        when(answerCorrect?.first) {
-                            0-> userChoiceAState = 0
-                            2-> userChoiceCState = 2
-                            else -> userChoiceDState = 3
+                    if (viewModel !is TestExaminationViewModel) {
+
+                        if (userChoiceBState != answerCorrect?.first) {
+                            val dataQuestionModel =
+                                QuestionWrongModel(idQuestion = questionModel.id)
+                            saveDataQuestionWrong(viewModel, dataQuestionModel)
+                            when (answerCorrect?.first) {
+                                0 -> userChoiceAState = 0
+                                2 -> userChoiceCState = 2
+                                else -> userChoiceDState = 3
+                            }
+                        } else {
+                            when (viewModel) {
+                                is LearnWrongViewModel -> viewModel.deleteDataQuestion(questionModel.id)
+                            }
                         }
                     }else {
-                        when(viewModel) {
-                            is LearnWrongViewModel->  viewModel.deleteDataQuestion(questionModel.id)
-                        }
+                        userChoiceAState = -1
+                        userChoiceDState = -1
+                        userChoiceCState = -1
                     }
-
-                }, idColor = changeBgColorQuestion(userChoiceBState, answerCorrect?.first))
+                }, idColor = if (viewModel is TestExaminationViewModel )changeBgColorQuestion(userChoiceBState) else changeBgColorQuestion(userChoiceBState, answerCorrect?.first))
             }
             if (questionModel.ansC?.isNotEmpty() == true) {
                 OneQuestion(question = questionModel.ansC, modifier.clickable {
-                    println("c")
-                    if (isAnswer) return@clickable
-                    isAnswer = true
-
-                    onChange()
+                    if(viewModel !is TestExaminationViewModel){
+                        if (isAnswer) return@clickable
+                        isAnswer = true
+                    }
+                    onChange(2)
 
                     userChoiceCState = 2
-                    if (userChoiceCState != answerCorrect?.first){
-                        val dataQuestionModel = QuestionWrongModel(idQuestion = questionModel.id)
-                        saveDataQuestionWrong(viewModel,dataQuestionModel)
-                        when(answerCorrect?.first) {
-                            0-> userChoiceAState = 0
-                            1-> userChoiceBState = 1
-                            else -> userChoiceDState = 3
+                    if (viewModel !is TestExaminationViewModel) {
+
+                        if (userChoiceCState != answerCorrect?.first) {
+                            val dataQuestionModel =
+                                QuestionWrongModel(idQuestion = questionModel.id)
+                            saveDataQuestionWrong(viewModel, dataQuestionModel)
+                            when (answerCorrect?.first) {
+                                0 -> userChoiceAState = 0
+                                1 -> userChoiceBState = 1
+                                else -> userChoiceDState = 3
+                            }
+                        } else {
+                            when (viewModel) {
+                                is LearnWrongViewModel -> viewModel.deleteDataQuestion(questionModel.id)
+                            }
                         }
                     }else {
-                        when(viewModel) {
-                            is LearnWrongViewModel->  viewModel.deleteDataQuestion(questionModel.id)
-                        }
+                        userChoiceBState = -1
+                        userChoiceDState = -1
+                        userChoiceAState = -1
                     }
 
-
-                }, idColor = changeBgColorQuestion(userChoiceCState, answerCorrect?.first))
+                }, idColor = if (viewModel is TestExaminationViewModel )changeBgColorQuestion(userChoiceCState) else changeBgColorQuestion(userChoiceCState, answerCorrect?.first))
             }
-            if (questionModel.ansD?.isNotEmpty()== true) {
+            if (questionModel.ansD?.isNotEmpty() == true) {
                 OneQuestion(question = questionModel.ansD, modifier.clickable {
-                    println("d")
-                    if (isAnswer) return@clickable
-                    isAnswer = true
-                    onChange()
+                    if(viewModel !is TestExaminationViewModel){
+                        if (isAnswer) return@clickable
+                        isAnswer = true
+                    }
+                    onChange(3)
 
                     userChoiceDState = 3
-                    if (userChoiceDState != answerCorrect?.first){
-                        val dataQuestionModel = QuestionWrongModel(idQuestion = questionModel.id)
-                        saveDataQuestionWrong(viewModel,dataQuestionModel)
-                        when(answerCorrect?.first) {
-                            0-> userChoiceAState = 0
-                            1-> userChoiceBState = 1
-                            else -> userChoiceCState = 2
+                    if (viewModel !is TestExaminationViewModel) {
+                        if (userChoiceDState != answerCorrect?.first) {
+                            val dataQuestionModel =
+                                QuestionWrongModel(idQuestion = questionModel.id)
+                            saveDataQuestionWrong(viewModel, dataQuestionModel)
+                            when (answerCorrect?.first) {
+                                0 -> userChoiceAState = 0
+                                1 -> userChoiceBState = 1
+                                else -> userChoiceCState = 2
+                            }
+                        } else {
+                            when (viewModel) {
+                                is LearnWrongViewModel -> viewModel.deleteDataQuestion(questionModel.id)
+                            }
                         }
                     }else {
-                        when(viewModel) {
-                            is LearnWrongViewModel->  viewModel.deleteDataQuestion(questionModel.id)
-                        }
+                        userChoiceBState = -1
+                        userChoiceAState = -1
+                        userChoiceCState = -1
                     }
-                }, idColor = changeBgColorQuestion(userChoiceDState, answerCorrect?.first))
+                }, idColor = if (viewModel is TestExaminationViewModel )changeBgColorQuestion(userChoiceDState) else changeBgColorQuestion(userChoiceDState, answerCorrect?.first))
             }
         }
     }
@@ -386,6 +438,13 @@ fun changeBgColorQuestion(data: Int, ansCorrect: Int?): Int{
         }else {
             R.color.red
         }
+    }else {
+        R.color.bg_question
+    }
+}
+fun changeBgColorQuestion(data: Int): Int{
+    return if (data != -1){
+        R.color.green_primary
     }else {
         R.color.bg_question
     }

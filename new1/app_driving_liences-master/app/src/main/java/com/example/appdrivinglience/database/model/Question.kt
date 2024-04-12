@@ -8,8 +8,8 @@ data class Question(
     @PrimaryKey(autoGenerate = true)
     val id: Long = 0L ,
     val idCategory: Long = 0L,
-    val idImage: Long = 0L,
     val idCategoryQuestion: Long = 0L,
+    val imageUrl:String = "",
     val question: String= "",
     val ansA : String? = null,
     val ansB : String? = null,

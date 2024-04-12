@@ -4,6 +4,7 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.appdrivinglience.core.FileSharePreference
 import com.example.appdrivinglience.database.dao.CategoryLicenseDao
 import com.example.appdrivinglience.database.dao.CategoryQuestionDao
 import com.example.appdrivinglience.database.model.CategoryLicense
@@ -17,7 +18,8 @@ import javax.inject.Inject
 @HiltViewModel
 class HomeViewModel @Inject constructor(
     private val categoryLicenseDao: CategoryLicenseDao,
-    private val categoryQuestionDao: CategoryQuestionDao
+    private val categoryQuestionDao: CategoryQuestionDao,
+    private val fileStore: FileSharePreference,
 ) : ViewModel() {
     private val categoryMutableStateFlow: MutableStateFlow<List<CategoryLicense>> = MutableStateFlow(listOf())
     val categoryFlow: StateFlow<List<CategoryLicense>> = categoryMutableStateFlow
@@ -25,6 +27,7 @@ class HomeViewModel @Inject constructor(
     private val _categoryLicenseState = mutableStateOf<HomeState>(HomeState.Loading)
     val categoryLicenseState: State<HomeState> = _categoryLicenseState
 
+    val listCategoryLicense = mutableListOf<CategoryLicense>()
     private val _categoryQuestionState = mutableStateOf<HomeState>(HomeState.Loading)
     val categoryQuestionState: State<HomeState> = _categoryQuestionState
 
@@ -33,6 +36,14 @@ class HomeViewModel @Inject constructor(
             categoryMutableStateFlow.value = categoryLicenseDao.getAllCategoryLicense()
         }
     }
+
+    fun saveCategoryLicense(data : String){
+        fileStore.saveCategoryLicense(data)
+    }
+    fun getCategoryLicense(): String {
+        return fileStore.getCategoryLicense()
+    }
+
     fun insertAllCategoryLicense() {
         viewModelScope.launch {
             categoryLicenseDao.insertCategoryLicense(CategoryLicense(nameLicense = "A1", description = "Xe mô tô 2 bánh có dung tích xi lanh dưới 175 cm3" ))
@@ -60,7 +71,9 @@ class HomeViewModel @Inject constructor(
     fun getAllCategoryLicense(){
         viewModelScope.launch {
             runCatching {
-                _categoryLicenseState.value = HomeState.Success(categoryLicenseDao.getAllCategoryLicense());
+                listCategoryLicense.clear()
+                listCategoryLicense.addAll(categoryLicenseDao.getAllCategoryLicense())
+                _categoryLicenseState.value = HomeState.Success(listCategoryLicense);
 
             }.onFailure {
                 _categoryLicenseState.value = HomeState.Error(it.message);

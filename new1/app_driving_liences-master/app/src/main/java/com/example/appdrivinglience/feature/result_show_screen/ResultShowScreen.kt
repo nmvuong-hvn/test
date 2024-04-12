@@ -2,6 +2,7 @@ package com.example.appdrivinglience.feature.result_show_screen
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -28,16 +29,22 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.appdrivinglience.R
+import com.example.appdrivinglience.feature.examination_test_screen.TestExaminationViewModel
 
 @Composable
 fun ResultShowScreen(
-    modifier: Modifier = Modifier
+    viewModel: TestExaminationViewModel = hiltViewModel(),
+    modifier: Modifier = Modifier,
+    onCancel: () -> Unit,
+    onAccept: () -> Unit,
 ) {
     Column(
         modifier = modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 16.dp),
+            .padding(horizontal = 16.dp, vertical = 16.dp)
+            .padding(top = 90.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Top
     ) {
@@ -62,7 +69,7 @@ fun ResultShowScreen(
         Spacer(modifier = Modifier.height(16.dp))
 
         Text(
-            text = "21/25",
+            text = "${viewModel.scoreState.value}/${viewModel.listQuestions.size}",
             style = TextStyle(
                 fontSize = 24.sp,
                 lineHeight = 32.sp,
@@ -117,16 +124,27 @@ fun ResultShowScreen(
                     .padding(start = 16.dp, top = 8.dp, end = 16.dp, bottom = 8.dp)
             ) {
                 Row(
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable {
+                            onCancel()
+                        },
                     horizontalArrangement = Arrangement.Center,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Image(
+                        modifier = Modifier.clickable {
+                            onCancel()
+                        },
                         painter = painterResource(id = R.drawable.share),
                         contentDescription = null
                     )
                     Text(
-                        modifier = Modifier.padding(horizontal = 16.dp),
+                        modifier = Modifier
+                            .padding(horizontal = 16.dp)
+                            .clickable {
+                                onCancel()
+                            },
                         text = "Hủy bỏ",
                         style = TextStyle(
                             fontSize = 16.sp,
@@ -153,17 +171,28 @@ fun ResultShowScreen(
                     .padding(start = 16.dp, top = 8.dp, end = 16.dp, bottom = 8.dp)
             ) {
                 Row(
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable {
+                            onAccept()
+                        },
                     horizontalArrangement = Arrangement.Center,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Image(
+                        modifier = Modifier.clickable {
+                            onAccept()
+                        },
                         painter = painterResource(id = R.drawable.activity),
                         contentDescription = null
                     )
 
                     Text(
-                        modifier = Modifier.padding(horizontal = 16.dp),
+                        modifier = Modifier
+                            .padding(horizontal = 16.dp)
+                            .clickable {
+                                onAccept()
+                            },
                         text = "Đồng ý",
                         style = TextStyle(
                             fontSize = 16.sp,
@@ -177,11 +206,4 @@ fun ResultShowScreen(
             }
         }
     }
-}
-
-
-@Preview
-@Composable
-fun PreviewResultShowScreen() {
-    ResultShowScreen()
 }

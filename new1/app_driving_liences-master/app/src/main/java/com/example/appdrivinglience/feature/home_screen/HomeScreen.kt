@@ -115,7 +115,7 @@ fun HomeScreen(
                     HomeState.Loading -> {
                     }
                     is HomeState.Success<*> -> {
-                        val data = dataTypeLicense.listCategoryQuestion as List<*>
+                        val data = (dataTypeLicense.listCategoryQuestion as List<*>).map { it -> it as CategoryLicense}.map { it.nameLicense }.toList()
                         Row(
                             modifier = modifier
                                 .width(328.dp)
@@ -143,7 +143,7 @@ fun HomeScreen(
                             }
 
                             Text(
-                                text = "Hạng thi ",
+                                text = "Hạng thi ${if(homeViewModel.getCategoryLicense().isEmpty()) data[0] else homeViewModel.getCategoryLicense()} ",
                                 style = TextStyle(
                                     fontSize = 16.sp,
                                     lineHeight = 24.sp,

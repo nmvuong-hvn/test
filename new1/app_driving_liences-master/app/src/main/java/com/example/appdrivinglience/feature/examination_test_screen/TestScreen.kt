@@ -4,9 +4,11 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -24,15 +26,27 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.appdrivinglience.R
 
 @Composable
-fun TestScreen(modifier: Modifier = Modifier) {
-
+fun TestScreen(
+    testExaminationViewModel: TestExaminationViewModel = hiltViewModel(),
+    modifier: Modifier = Modifier) {
+    println("Size = ${testExaminationViewModel.getNumberExamination()}")
+    LazyColumn(
+        modifier = modifier.fillMaxSize().padding(top = 90.dp, bottom = 100.dp),
+        horizontalAlignment = Alignment.Start,
+        verticalArrangement = Arrangement.Top
+    ) {
+        items(testExaminationViewModel.getNumberExamination()){
+            ItemTest(index = it, testExaminationViewModel = testExaminationViewModel)
+        }
+    }
 }
 
 @Composable
-fun ItemTest(modifier: Modifier = Modifier) {
+fun ItemTest(index: Int ,modifier: Modifier = Modifier, testExaminationViewModel: TestExaminationViewModel) {
     Card(
         elevation = CardDefaults.cardElevation(
             defaultElevation = 2.dp
@@ -43,7 +57,7 @@ fun ItemTest(modifier: Modifier = Modifier) {
         ),
         modifier = modifier
             .fillMaxWidth()
-            .padding(top = 16.dp)
+            .padding(horizontal = 16.dp, vertical = 8.dp)
     ) {
         Row(
             modifier = modifier
@@ -60,7 +74,7 @@ fun ItemTest(modifier: Modifier = Modifier) {
 
             ) {
                 Text(
-                    text = "Đề số 1",
+                    text = "Đề số ${index+1}",
                     style = TextStyle(
                         fontSize = 16.sp,
                         lineHeight = 24.sp,
@@ -71,7 +85,7 @@ fun ItemTest(modifier: Modifier = Modifier) {
                     )
                 )
                 Text(
-                    text = "25 câu / 19 phút",
+                    text = "${testExaminationViewModel.listQuestions.size} câu / 19 phút",
                     style = TextStyle(
                         fontSize = 14.sp,
                         lineHeight = 20.sp,
@@ -90,5 +104,5 @@ fun ItemTest(modifier: Modifier = Modifier) {
 @Preview
 @Composable
 fun PreviewItemTest() {
-    ItemTest()
+//    ItemTest()
 }
