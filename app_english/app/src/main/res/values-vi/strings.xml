@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="button_go">Let’s go</string>
+    <string name="tv_welcome">Welcome to </string>
+    <string name="tv_language">Display  language</string>
+    <string name="tv_sign_up">Đăng kí</string>
+    <string name="tv_sign_in">Đăng nhập</string>
+    <string name="tv_send_email">Send Email</string>
+    <string name="tv_reset_pass">Reset password</string>
+    <string name="tv_remember">Ghi nhớ</string>
+    <string name="tv_forgot">Quên mật khẩu</string>
+    <string name="tv_account">Bạn chưa có tài khoản có phải không?</string>
+    <string name="tv_english">English</string>
+    <string name="tv_vn">Vietnamese</string>
+    <string name="tv_done">Done</string>
+    <string name="email">Email</string>
+    <string name="password">Mật khẩu</string>
+    <string name="confirm_password">Xác nhận mật khẩu</string>
+    <string name="language_app">Language App</string>
+    <string name="shining_world">Shining World</string>
+    <string name="congrats">Congrats!</string>
+    <string name="congratulations_on_learning_all_the_new_words">Congratulations on learning\nall the new words!</string>
+    <string name="take_the_quiz">Take the quiz</string>
+    <string name="take_the_quiz_now">Take the quiz now!</string>
+    <string name="play_game_now">Play game now!</string>
+    <string name="congratulations_on_completing_nthe_vocabulary_test">Congratulations on completing\nthe vocabulary test!</string>
+</resources>

@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_margin="5dp"
+    android:layout_height="163dp">
+   <LinearLayout
+       android:background="@drawable/custom_item_subject"
+       android:gravity="center_horizontal"
+       android:orientation="vertical"
+       android:layout_width="match_parent"
+       android:layout_height="match_parent">
+       <androidx.appcompat.widget.AppCompatImageView
+           android:layout_width="63dp"
+           android:layout_marginTop="19dp"
+           android:layout_height="63dp"/>
+
+       <androidx.appcompat.widget.AppCompatTextView
+           android:id="@+id/tv_name_subject"
+           android:layout_marginTop="6dp"
+           android:fontFamily="@font/bevietnampro_semibold"
+           android:layout_width="wrap_content"
+           android:text="Animals"
+           android:textSize="18sp"
+           android:layout_height="wrap_content"/>
+       <androidx.appcompat.widget.AppCompatTextView
+           android:id="@+id/tv_points"
+           android:fontFamily="@font/bevietnampro_regular"
+           android:text="1000pts"
+           android:textSize="10sp"
+           android:layout_width="wrap_content"
+           android:layout_height="wrap_content"/>
+
+       <androidx.appcompat.widget.AppCompatTextView
+           android:id="@+id/tv_status"
+           android:fontFamily="@font/opensans_bold"
+           android:text="In Progress"
+           android:background="@drawable/custom_text_in_progress"
+           android:textColor="@color/text_color_in_progress"
+           android:layout_marginTop="5dp"
+           android:paddingHorizontal="8dp"
+           android:textSize="12sp"
+           android:layout_width="wrap_content"
+           android:layout_height="wrap_content"/>
+   </LinearLayout>
+
+</androidx.cardview.widget.CardView>

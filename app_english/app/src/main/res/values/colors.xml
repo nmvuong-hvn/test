@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+    <color name="begonia">#FB6976</color>
+    <color name="yellow">#FFDA2C</color>
+    <color name="tv_welcome">#1E5655</color>
+    <color name="fb_text">#1DA2F3</color>
+    <color name="hint_text">#8A8A8A</color>
+    <color name="google_text">#ED4C5C</color>
+    <color name="deep_blue">#410FA3</color>
+    <color name="vibrant_yellow">#FFDA2C</color>
+    <color name="bg_completed">#43CC28</color>
+    <color name="text_color_in_progress">#B16E3D</color>
+    <color name="tinted_ice">#DBF9F8</color>
+    <color name="color_btn_take_quiz">#49B0AB</color>
+
+</resources>

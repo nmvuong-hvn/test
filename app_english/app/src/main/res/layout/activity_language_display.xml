@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:background="@drawable/img_bg"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".feature.LanguageDisplayActivity">
+
+    <androidx.appcompat.widget.AppCompatImageView
+        android:layout_width="wrap_content"
+        android:id="@+id/img_astr"
+        android:layout_marginTop="22dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:src="@drawable/cute_astronat"
+        android:layout_height="wrap_content"/>
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:layout_marginTop="28dp"
+        android:layout_width="wrap_content"
+        android:text="@string/tv_language"
+        android:textSize="32sp"
+        android:id="@+id/tv_language"
+        android:textStyle="bold"
+        android:textColor="@color/white"
+        app:layout_constraintTop_toBottomOf="@+id/img_astr"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_height="wrap_content"/>
+
+    <androidx.cardview.widget.CardView
+        android:layout_marginTop="52dp"
+        app:layout_constraintTop_toBottomOf="@id/tv_language"
+        android:id="@+id/american_tv_language"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginHorizontal="16dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="72dp"
+            tools:ignore="UselessLeaf">
+
+            <androidx.appcompat.widget.AppCompatImageView
+                android:src="@drawable/americain"
+                android:layout_marginStart="18dp"
+                android:layout_centerVertical="true"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:layout_centerHorizontal="true"
+                android:text="@string/tv_english"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:textColor="@color/black"
+                android:layout_centerVertical="true"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+        </RelativeLayout>
+    </androidx.cardview.widget.CardView>
+
+
+    <androidx.cardview.widget.CardView
+        android:layout_marginTop="26dp"
+        app:layout_constraintTop_toBottomOf="@id/american_tv_language"
+        android:id="@+id/vietnam_tv_language"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginHorizontal="16dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="72dp"
+            tools:ignore="UselessLeaf">
+
+            <androidx.appcompat.widget.AppCompatImageView
+                android:src="@drawable/vietnam"
+                android:layout_marginStart="18dp"
+                android:layout_centerVertical="true"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:layout_centerHorizontal="true"
+                android:text="@string/tv_vn"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:textColor="@color/black"
+                android:layout_centerVertical="true"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+        </RelativeLayout>
+    </androidx.cardview.widget.CardView>
+
+
+    <RelativeLayout
+        android:background="@color/white"
+        android:id="@+id/layout_done"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_width="match_parent"
+        android:layout_height="96dp">
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/btn_done"
+            android:text="@string/tv_done"
+            android:textStyle="bold"
+            android:textSize="18sp"
+            android:layout_centerVertical="true"
+            android:layout_marginHorizontal="16dp"
+            android:background="@drawable/common_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+    </RelativeLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
