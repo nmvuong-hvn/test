@@ -1,0 +1,30 @@
+
+@startuml
+participant HAribBooking
+participant HAribBookings
+
+alt mSchedule != null
+    HAribBooking -> HAribBooking : take bookingType \nString bookingType =getBookingType
+    alt uri != null && uri.toString().contains("channel")
+        HAribBooking -> HAribBooking : callback onChannelRecordChanged()
+        HAribBooking -> HAribBooking : return
+    end
+    HAribBooking -> HAribBookings: take schedule status and alarm status\nPair<Integer, Integer> statusPair = HAribBookings.getScheduleStatusAndAlarmStatusFromDB(mContext, mScheduleId)
+    alt statusPair == null
+        HAribBooking -> HAribBooking: scheduleStatus = HBooking.getScheduleStatusFromDB(mContext, mScheduleId) and alarmStatus = mSchedule.getAlarmStatus()
+    else
+        HAribBooking -> HAribBooking: scheduleStatus= statusPair.first and alarmStatus= statusPair.second
+    end
+
+    HAribBooking -> HAribBooking: isScheduleChanged = (scheduleStatus != mSchedule.getStatus())
+    HAribBooking -> HAribBooking: isAlarmChanged = (alarmStatus != mSchedule.getAlarmStatus())
+
+    alt isScheduleChanged == true
+        HAribBooking -> HAribBooking: update schedule status\nmSchedule.setStatus(scheduleStatus)\nand callback updateBookingStatus(scheduleStatus) and onScheduleChanged()
+    else if isAlarmChanged == true
+        HAribBooking -> HAribBooking: update alarm status\n mSchedule.setAlarmStatus(alarmStatus)\n and callback onAlarmStatusChanged(alarmStatus)
+    end
+
+    HAribBooking -> HAribBooking : callback onChangeOthers(uri)
+end
+@enduml

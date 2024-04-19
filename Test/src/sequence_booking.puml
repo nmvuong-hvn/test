@@ -1,0 +1,60 @@
+@startuml
+participant HCoronaExtManager as Corona
+participant HCoronaExtFuncSet as CoronaExt
+participant HTvContractUtils  as HtvContract
+participant HBookingEventManager
+participant HUtils
+participant HCoronaExtNotification
+participant HBaseExtension
+participant LauncherActivity
+    HBaseExtension --> Corona : callback command (CMD_GET_DMS_LIST)
+      Corona -> Corona ++: handleMsg(Message message)
+            note over Corona
+                with (Message message)
+                has command = CMD_GET_DMS_LIST
+            end note
+    Corona --> HBaseExtension : sendExtensionCommand (CMD_GET_DMS_LIST)
+    HBaseExtension --> Corona : callback command (CMD_RESERVE_PROGRAMME)
+        
+    Corona -> Corona ++: handleMsg(Message message)
+        note over Corona
+            with (Message message)
+            has command = CMD_RESERVE_PROGRAMME
+        end note
+
+    Corona -> CoronaExt ++: onCmdReserveProgram(params)
+    CoronaExt -> HtvContract ++: HTvContractUtils.getChannelDataSimpleCached(context, channelId)
+        note over HtvContract
+            this function takes channel
+            and event information.
+        end note
+    HtvContract --> CoronaExt: return data channel
+    CoronaExt -> CoronaExt : checkContractInfo(channelId, programIdList)
+    CoronaExt -> CoronaExt++ : reserveProgramPhase2(data)
+    CoronaExt -> CoronaExt : check if it is a past event
+    CoronaExt -> CoronaExt : check a reservation by recommendation
+    CoronaExt -> CoronaExt : check if it is DR only
+    CoronaExt -> CoronaExt : check if it is forcedRecording
+    CoronaExt -> CoronaExt : check the free space of HDD
+    CoronaExt -> CoronaExt : Check STB Validation
+    CoronaExt    --> HBookingEventManager:reserveEBRBooking\n(isInstantRecMode, htvAribReserveData)
+    HBookingEventManager -> HBookingEventManager++: createBookingParameters \n(HAribConstants.ACTION_TYPE_EBR,\n htvAribReserveData)
+    HBookingEventManager -> HBookingEventManager: factoryType HDD Recording\nAribBooking airbooking = \nreserve(HAribConstants.ACTION_TYPE_EBR, params)
+    HBookingEventManager -> HUtils: if airbooking != null
+    HUtils -> HCoronaExtNotification: notifyCmMibInformation(mContext, CMD_ON_CM_MIB_RECORD_INFORMATION,true,\nhtvAribReserveData.getChannelId(), bookingId)
+    HCoronaExtNotification --> Corona: sendExtMsg
+    Corona --> HBaseExtension: command(command,params)
+    HBookingEventManager -> HBookingEventManager : notifyReservationResult\n(bookingId, resultCode, htvAribReserveData.getSequenceId())
+    HBookingEventManager --> HBaseExtension: command(HCoronaExtension.ON_RESERVATION_ADDED, params)
+       note left of HBookingEventManager
+              params: KEY_SEQUENCE_ID, SCHEDULE_ID, KEY_RESULT_CODE
+       end note
+    HBaseExtension -> HBaseExtension ++: Process
+    HBaseExtension --> Corona : callback command(ON_RESERVATION_ADDED)
+    HBaseExtension --> Corona++ : callback command(CMD_GET_RESERVATION)
+    Corona --> CoronaExt: onCmdGetReservation(Bundle data)
+    CoronaExt -> CoronaExt ++: handleGetBooking
+    CoronaExt --> HBaseExtension : sendExtMsg
+    CoronaExt --> HBaseExtension : update Reservation List to LauncherActivity
+
+@enduml

@@ -1,0 +1,10 @@
+@startuml
+participant HtvContentObserver
+participant ContentObserver
+participant HtvContentObserver
+participant HAribBooking
+
+ContentObserver --> HtvContentObserver : callback OnChange(boolean selfChange) and \nonChange(boolean selfChange, Uri uri)
+HtvContentObserver --> HAribBooking : callback onChanged(Uri uri)
+
+@enduml

@@ -1,0 +1,30 @@
+@startuml
+participant HCoronaExtManager
+participant HCoronaExtFuncSet
+participant HTvContractUtils
+participant HBookingEventManager
+participant HUtils
+participant HCoronaExtNotification
+participant HBaseExtension
+participant LauncherActivity
+HCoronaExtFuncSet -> HCoronaExtFuncSet: get data based on \nparam( factoryType,\nchannelId,startTime,duration,..)
+HCoronaExtFuncSet -> HCoronaExtFuncSet: get data based on \nparam( factoryType,\nchannelId,startTime,duration,..)
+
+HCoronaExtFuncSet -> HTvContractUtils: take list programDataList0\nHTvContractUtils.getProgramDataSimpleInRange(mContext, channelId, startTime, endTime)
+HTvContractUtils --> HCoronaExtFuncSet: return programDataList0 list
+HCoronaExtFuncSet -> HCoronaExtFuncSet: get data from programDataList0\n
+
+HCoronaExtFuncSet -> HTvContractUtils: HTvContractUtils.getChannelDataSimpleCached(mContext, channelId)
+HTvContractUtils --> HCoronaExtFuncSet: return ChannelDataSimple
+
+HCoronaExtFuncSet -> HCoronaExtFuncSet: check if it is forcedRecording
+HCoronaExtFuncSet -> HCoronaExtFuncSet: check the free space of HDD
+HCoronaExtFuncSet -> HCoronaExtFuncSet: Check STB Validation
+HCoronaExtFuncSet -> HCoronaExtFuncSet: Check CopyProtection Info
+HCoronaExtFuncSet -> HCoronaExtFuncSet: create object HtvAribReserveData() to reserve
+HCoronaExtFuncSet -> HCoronaExtFuncSet: create object HtvAribReserveData() to reserve
+
+HCoronaExtFuncSet -> HBookingEventManager : HBookingEventManager.getManager(mContext)
+HBookingEventManager --> HCoronaExtFuncSet : return data (HBookingEventManager)
+HCoronaExtFuncSet -> HCoronaExtFuncSet: reserveWatchingTBRBooking if factoryTypeInt == HReservation.FactoryType.VIEWING_RESERVATION.toInt() \n otherwise and time booking is less then one minute will use reserveTBRBooking
+@enduml

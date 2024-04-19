@@ -1,0 +1,33 @@
+@startuml
+participant HCoronaExtManager
+participant HCoronaExtFuncSet
+participant HTvContractUtils
+participant HBookingEventManager
+participant HUtils
+participant HCoronaExtNotification
+participant HBaseExtension
+participant LauncherActivity
+participant HTvBookingManager
+
+alt mTvBookingManager != null
+    HBookingEventManager -> HTvBookingManager : take HAribBooking \nHAribBooking aribBooking = mTvBookingManager.reserve(bookingType, params);
+    HTvBookingManager  --> HBookingEventManager : return aribBooking (HAribBooking)
+    alt aribBooking != null
+    note left of HBookingEventManager
+        isInstantRecord = currentTime >= recStartTime
+        requestAutoDelete = recStartTime - RECORDING_LIST_DELETE_START_TIME - currentTime
+        RECORDING_LIST_DELETE_START_TIME is 15 minutes
+    end note
+    HBookingEventManager -> HBookingEventManager : take isInstantRecord and requestAutoDelete
+        alt isInstantRecord == false
+            HBookingEventManager -> LauncherActivity : callback for BookingEventListener\nmOnBookingEventListener.onReservationAdded(aribBooking,requestAutoDelete);
+        end
+    HBookingEventManager -> HBookingEventManager : return aribBooking
+
+    end
+    HBookingEventManager -> HBookingEventManager : return null
+else
+    HBookingEventManager -> HBookingEventManager : return null
+end
+
+@enduml

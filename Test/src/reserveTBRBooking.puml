@@ -1,0 +1,37 @@
+@startuml
+participant HCoronaExtManager
+participant HCoronaExtFuncSet
+participant HTvContractUtils
+participant HBookingEventManager
+participant HUtils
+participant HCoronaExtNotification
+participant HBaseExtension
+participant LauncherActivity
+
+HCoronaExtFuncSet --> HBookingEventManager : reserveTBRBooking(isInstantRecMode,htvAribReserveData)
+HBookingEventManager -> HBookingEventManager: htvAribReserveData.setBookingType(HAribConstants.ACTION_TYPE_TBR)
+HBookingEventManager -> HBookingEventManager: createBookingParameters(HAribConstants.ACTION_TYPE_TBR, htvAribReserveData)
+HBookingEventManager -> HBookingEventManager: check recording isInstantRecMode and FiredBooking not is more max recording (2)\nif (isInstantRecMode && HBookingUtils.getFiredBookingCount() >= HBookingConstants.MAXIMUM_RECORDING_COUNT)
+HBookingEventManager -> HBookingEventManager: Currently, recording uses HDD
+HBookingEventManager -> HBookingEventManager: Take data HAribBooking\naribBooking = reserve(HAribConstants.ACTION_TYPE_TBR, params)
+
+    alt aribBooking != null
+         HBookingEventManager -> HBookingEventManager: take bookingId and result code\n(bookingId = aribBooking.getBookingId() and \nHCoronaExtension.ResultCode.SUCCESS.toInt())
+         HBookingEventManager -> HUtils: HUtils.notifyCmMibInformation (mContext, \nHCoronaExtApiKey.CMD_ON_CM_MIB_RECORD_INFORMATION,\ntrue, htvAribReserveData.getChannelId(), bookingId)
+    else
+         HBookingEventManager -> HBookingEventManager: take resultCode = HCoronaExtension.ResultCode.ERROR_UNKNOWN.toInt();
+    end
+HBookingEventManager -> HBookingEventManager: notifyReservationResult(bookingId,resultCode,sequenceId)
+    note left of HBookingEventManager
+    notifyReservationResult(bookingId,resultCode,sequenceId)
+    callback for HExtension.
+    HExtension extension = HExtension.getExtensionManager()
+    if (extension != null)
+       Bundle params = new Bundle();
+       params.putString(KEY_SEQUENCE_ID, sequenceId);
+       params.putString(HReservation.SCHEDULE_ID, String.valueOf(bookingId));
+       params.putInt(HCoronaExtension.KEY_RESULT_CODE, resultCode);
+       extension.command(HCoronaExtension.ON_RESERVATION_ADDED, params);;
+
+    end note
+@enduml

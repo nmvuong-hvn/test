@@ -1,0 +1,21 @@
+@startuml
+participant HCoronaExtManager
+participant HCoronaExtFuncSet
+participant HTvContractUtils
+participant HBookingEventManager
+participant HUtils
+participant HCoronaExtNotification
+participant HBaseExtension
+participant LauncherActivity
+
+
+HBaseExtension --> HCoronaExtManager : callback command (CMD_RESERVE_TIME)
+HCoronaExtManager -> HCoronaExtManager : handleExtMsg(message)
+HCoronaExtManager --> HCoronaExtFuncSet : onCmdReserveTime(param)
+HCoronaExtFuncSet -> HCoronaExtFuncSet: get data \n(channelId,startTime,duration,endTime)\nfrom (param)
+HCoronaExtFuncSet --> HTvContractUtils: HTvContractUtils.getChannelDataSimpleCached(mContext, channelId)
+HTvContractUtils  --> HCoronaExtFuncSet: return data (ChannelDataSimple)
+HCoronaExtFuncSet  -> HCoronaExtFuncSet: check contract_info
+HCoronaExtFuncSet  -> HCoronaExtFuncSet: reserveTimePhase2(param)
+
+@enduml

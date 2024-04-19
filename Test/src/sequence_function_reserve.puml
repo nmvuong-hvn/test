@@ -1,0 +1,62 @@
+@startuml
+participant HTvBookingManager
+participant HBookingService
+participant HExtensionParamHelper
+participant HAribBooking
+
+
+HTvBookingManager -> HTvBookingManager: get Class is based on action
+   note left of HTvBookingManager
+        Check parameter validation
+        with parameter action
+    end note
+    alt failure
+        return null
+    end
+
+HTvBookingManager -> HTvBookingManager: check action is \nbackground booking to calculate time\nif it is background booking, will use \ngetInitialStartTimeForBgBk(action, bundle)
+    alt successful
+        HTvBookingManager -> HTvBookingManager: action is \nbackground booking \n( ACTION_TYPE_EXPORT_FILE,\nACTION_TYPE_F2F_TRANSCODE\nACTION_TYPE_DUBBING) and \nbundle not EXT_PARAM_START_TIME will\ncalculate start time, otherwise get default in bundle
+    end
+HTvBookingManager --> HExtensionParamHelper: get HBookingExtensionParam
+HExtensionParamHelper -> HExtensionParamHelper ++: toExtensionParam(action,contentResolver, bundle)
+    alt successful
+    HExtensionParamHelper --> HTvBookingManager: return HBookingExtensionParam
+    else failure
+    HExtensionParamHelper --> HTvBookingManager: return null
+    HTvBookingManager --> HTvBookingManager: return null
+    end
+    alt failure
+        HTvBookingManager -> HTvBookingManager : isUndefinedStartTimeEBR(context, action, extensionParam) == true
+        HTvBookingManager -> HTvBookingManager : return null
+    end
+HTvBookingManager -> HTvBookingManager : Create booking unique Identifier \nHAribBookings.makeBookingUniqueIdentifier(context, channelId)
+HTvBookingManager -> HTvBookingManager : Check duplicated  EBR schedule can be made by Tivo AutoRec \nisValidEBRRequest(extensionParam)
+    alt parentId = 0
+        HTvBookingManager --> HBookingService
+        HBookingService   -> HBookingService: addBooking
+        HBookingService   --> HTvBookingManager: return HBooking
+    else parentId != 0
+        HTvBookingManager -> HTvBookingManager : HAribBooking parentBooking = getBookingByBookingId(parentId)
+        HTvBookingManager --> HAribBooking : if parentBooking != null
+        HAribBooking -> HAribBooking++ : addChildBooking(bookingClass, extensionParam)
+        HAribBooking --> HTvBookingManager : return HAribBooking
+    end
+HTvBookingManager -> HTvBookingManager : Get HSchedule based on HBooking
+    alt schedule is null
+    HTvBookingManager -> HTvBookingManager : return null
+    end
+    alt schedule.isFired()
+        HTvBookingManager -> HTvBookingManager : cleanBooking(context, booking, isRecBooking, "the schedule is already running");
+        HTvBookingManager -> HTvBookingManager : return null
+    end
+    alt schedule.isParentBooking()
+        HTvBookingManager -> HTvBookingManager:  doResolutionProcess()
+    end
+    alt booking is HEventBaseRecBooking && schedule.isConflicted()
+        HTvBookingManager -> HTvBookingManager : ((HEventBaseRecBooking) booking).stopInForce(STOP_DUE_TO_SCHEDULE_CONFLICT)
+        HTvBookingManager -> HTvBookingManager : return null
+    end
+@enduml
+
+

@@ -1,0 +1,110 @@
+@startuml
+
+interface IInitializeFinishListener {
+void onInitializeFinished();
+}
+interface IRsvErrorCodeListener {
+void onRsvErrorCodeReceived(Bundle bundle, int errorCode);
+}
+interface IDLNARecCallback {
+void onRequestDLNARecReservation(String action, Bundle bundle);
+}
+interface IDLNAUpdateXSRS {
+void updateXSRS(Bundle bundle);
+}
+
+class HTvBookingManager {
+private Context context;
+private HBookingService bookingService;
+private HBookingRegistry bookingRegistry;
+private ContentResolver contentResolver;
+private HPowerStatusChecker powerStatusChecker;
+private final ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
+private AlarmManager mResolutionProcessorAM;
+private final int NEXT_RERESOLUTION_TIME = 60 * 10 * 1000; // 10 min
+private final int INITIAL_RERESOLUTION_TIME = 6 * 1000; // 6 sec
+BroadcastReceiver mResolutionProcessorAlarmReceiver;
+private IInitializeFinishListener initializeFinishListener;
+private IRsvErrorCodeListener errorCodeListener;
+
+private IDLNARecCallback dlnaRecCallback;
+private IDLNAUpdateXSRS mDLUpdateXSRS;
+
+public IDLNARecCallback getDlnaRecCallback()
+IDLNAUpdateXSRS getDLNAUpdateXRSRListener()
+void setmDLUpdateXSRS (IDLNAUpdateXSRS listener)
+
+
+}
+abstract class HAribBooking {
+public HAribBooking(Context context, Handler handler, HBookingExtensionParam extParam, Long parentId)
+public void setStopReason(String stopReason)
+public String getStopReason()
+public void setScheduleId(long scheduleId)
+protected abstract void onScheduleChanged()
+protected void onAlarmStatusChanged(int alarmStatus)
+protected void onChangeOthers(Uri uri)
+public void onChanged(Uri uri)
+public boolean updateBooking(long startTime, long duration)
+public boolean updateBookingByHReservation(HReservation hReservation)
+public HAribBooking getParentBooking()
+protected void putBundle(Bundle bundle)
+public void setExtensionValues(HBookingExtensionParam param)
+public abstract Bundle getBundle()
+void sendErrorCode(@HAribCodeTypeConstants.ErrorMailCode int errorCode)
+public boolean stopInForce(@HAribConstants.AribBookingStopReason String stopReason, @Nullable Bundle reasonParam)
+public void stopParent()
+protected static HSchedule.Builder addResources(HSchedule.Builder builder, String className)
+public HAribBooking getBaseBooking(@HAribConstants.Order int order)
+protected HAribBooking addChildBooking(@NonNull Class clazz, HBookingExtensionParam param)
+public void registerAllContentObserversIfNeed()
+void registerChannelContentObserver()
+private void updateBookingStatus(int scheduleStatus)
+public boolean isPassedSchedule()
+}
+abstract class HAribEventBooking
+abstract class HAribRecBooking
+abstract class HBackgroundBookingBase
+class HEventBaseRecBooking
+class HEventBaseReserveLiveBooking
+class HTimeBaseRecBooking
+class HTimeBaseReserveLiveBooking
+class HBackgroundBookingCorona
+class HBackgroundBookingCT
+class HBackgroundBookingPR
+class HBgEventTrackingBooking
+class HDubbingBooking
+class HExportFileBooking
+class HF2FTranscodeBooking
+
+class HBooking
+
+HAribBooking <|---HBooking
+HAribRecBooking <|--- HAribEventBooking
+HAribEventBooking <|---HAribBooking
+HBackgroundBookingBase  <|---HAribBooking
+HEventBaseRecBooking <|---HAribBooking
+HEventBaseReserveLiveBooking <|---HAribEventBooking
+HTimeBaseRecBooking <|---HAribRecBooking
+HTimeBaseReserveLiveBooking  <|---HAribBooking
+
+HBackgroundBookingCorona  <|---HBackgroundBookingBase
+HBackgroundBookingCT  <|---HBackgroundBookingBase
+HBackgroundBookingPR  <|---HBackgroundBookingBase
+HBgEventTrackingBooking  <|---HBackgroundBookingBase
+HDubbingBooking  <|---HBackgroundBookingBase
+HExportFileBooking  <|---HBackgroundBookingBase
+HF2FTranscodeBooking  <|---HBackgroundBookingBase
+
+interface BookingStatus {
+ int BOOKING_STATUE_IDLE     = 1;
+ int BOOKING_STATUE_STARTED  = 2;
+ int BOOKING_STATUE_STOPPED  = 3;
+}
+
+
+
+@enduml
+
+
+

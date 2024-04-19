@@ -1,0 +1,3 @@
+
+when makeBooking => notify for ContentProviderObserver -> callback HtvContentProvider: onChange(selfChange) public void onChange(boolean selfChange, Uri uri)
+-> launcherActivity
